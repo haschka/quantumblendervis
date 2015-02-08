@@ -1,0 +1,41 @@
+#include "stdosl.h"
+
+shader image_vol_texture(
+point Vector = P,
+string TextureFilenameFormat="//image_joined_%03d.png",
+int StackLo = 0,
+int StackHi = 1,
+output color VolumeColor= 0.0
+)
+    {
+    // outside of [-1,1] cube?
+    vector Pos = 0.5 * (Vector + vector(1.0,1.0,1.0));
+
+    if ((Pos[0] < 0.0) || (Pos[0] > 1.0) ||
+    (Pos[1] < 0.0) || (Pos[1] > 1.0) ||
+    (Pos[2] < 0.0) || (Pos[2] > 1.0) ||
+    (StackLo > StackHi) ) // invalid StackLo/StackHi
+    {
+        VolumeColor = 0.0;
+        return;
+    }
+    
+    // x, y, z texture influence
+    float x = Pos[0];
+    float y = Pos[1];
+    float z = 1 - Pos[2];
+    
+    // zi: z in stack dimension   
+    float StackSize = StackHi - StackLo + 1;
+    float zi = StackLo + z * StackSize;
+   
+    // color of zi-neighbouring images at (x, y)
+    int zi_floor = (int) trunc(zi);
+    int zi_ceil = (int) min(zi_floor+1, StackHi);
+    color col_floor = texture(format(TextureFilenameFormat, zi_floor), x, y);
+    color col_ceil = texture(format(TextureFilenameFormat, zi_ceil), x, y);
+    
+    // interpolation
+    float z_frac = zi - zi_floor;
+    VolumeColor = z_frac * col_ceil + (1.0 - z_frac) * col_floor;
+}

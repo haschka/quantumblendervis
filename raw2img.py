@@ -1,17 +1,16 @@
 from PIL import Image
+import sys
 import os
 import struct
 import numpy as np 
 
-npx = 500
-npy = 500
-npz = 500
+npx = int(sys.argv[2])
+npy = int(sys.argv[3])
+npz = int(sys.argv[4])
 
-fd = os.open("aspcombined.raw", os.O_RDONLY)
+fd = os.open(sys.argv[1], os.O_RDONLY)
 
 object=[]
-
-
 
 for i in range(npx):
     for j in range(npy):
