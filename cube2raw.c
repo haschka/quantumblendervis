@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     for(index_y=0;index_y<sizey;index_y++) {
       for(index_z=0;index_z<sizez;index_z++) {
 	fscanf(cubefile,"%lf",&new);
-
+	new = atan(new);
 	bigtable[index_x+index_y*sizex+index_z*sizexBYsizey] = new;
 	if(new > max) {
 	  max = new;
