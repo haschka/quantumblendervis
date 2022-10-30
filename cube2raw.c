@@ -104,13 +104,13 @@ int main(int argc, char** argv) {
     }
   }
   
-  rescalefactor = (max-min)*254;
+  rescalefactor = 254./(fabs(max-min));
   printf("%lf %lf \n",max,min);  
   for(index_x=0;index_x<sizex;index_x++) {
     for(index_y=0;index_y<sizey;index_y++) {
       for(index_z=0;index_z<sizez;index_z++) {
 	index = index_x+index_y*sizex+index_z*sizexBYsizey;
-	smalltable[index] = (char)rint(-min+bigtable[index]*rescalefactor);
+	smalltable[index] = (char)rint((bigtable[index]-min)*rescalefactor);
       }
     }
   }
