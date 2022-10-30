@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
   }
   
   // rescalefactor from minimum and maximum value in all cubes
-  rescalefactor = (max-min)*254;
+  rescalefactor = 254/(max-min);
   printf("%lf %lf \n",max,min);  
 
   // actual conversion taking place
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
 	for(index_z=0;index_z<sizez;index_z++) {
 	  fscanf(cubefile,"%lf",&new);
 	  index = index_x+index_y*sizex+index_z*sizexBYsizey;
-	  smalltable[index] = (char)rint(-min+new*rescalefactor);
+	  smalltable[index] = (char)rint((new-min)*rescalefactor);
 	}
       }
     }
