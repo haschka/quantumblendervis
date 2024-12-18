@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-
+__help__ = '''
 ## ubuntu requires:
-## sudo apt-get install build-essential
-## sudo apt-get install libatlas-base-dev
-## sudo apt-get install liblapack*
-## sudo apt-get install libblas*
+sudo apt-get install build-essential
+sudo apt-get install libatlas-base-dev
+sudo apt-get install liblapack*
+sudo apt-get install libblas*
+sudo apt-get install nwchem
+sudo snap install openbabel
+'''
 
 import os, sys, math, subprocess
 try:
@@ -18,6 +21,15 @@ if _thisdir not in sys.path: sys.path.insert(0,_thisdir)
 cube2raw = '/tmp/cube2raw'
 cubealign = '/tmp/cubealign'
 multicube2raw = '/tmp/multicube2raw'
+
+def convert_smile(smile):
+	tmp = '/tmp/in.smi'
+	open(tmp,'w').write(smile)
+	out = '/tmp/out.xyz'
+	#cmd = ['openbabel.obabel', '-i', 'smiles', '/tmp/in.smi', '-o', 'xyz', '-O', out]
+	cmd = ['openbabel.obabel', './in.smi', '-O', './out.xyz', '-h', '--gen3D']
+	print(cmd)
+	subprocess.check_call(cmd, cwd='/tmp')
 
 if __name__ == '__main__':
 	if not os.path.isfile(cube2raw):
@@ -46,6 +58,10 @@ if __name__ == '__main__':
 			kwargs[k]=float(v)
 		elif arg.endswith('.blend'):
 			blend = arg
+		elif arg=='--test':
+			convert_smile('CCCCOc1ccccc1')
+			sys.exit()
+
 	if not bpy:
 		cmd = ['blender']
 		if blend: cmd.append(blend)
