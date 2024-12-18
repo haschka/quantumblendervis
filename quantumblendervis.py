@@ -50,6 +50,24 @@ def install_openbabel():
 	print(cmd)
 	subprocess.check_call(cmd,cwd='./build-openbabel')
 
+def install_nwchem():
+	if not os.path.isdir('nwchem'):
+		cmd = ['git', 'clone', '--depth', '1', 'https://github.com/nwchemgit/nwchem.git']
+		print(cmd)
+		subprocess.check_call(cmd)
+
+	cmd = ['make']
+	print(cmd)
+	os.environ['NWCHEM_TOP'] = os.path.join(_thisdir, 'nwchem')
+	os.environ['NWCHEM_TARGET'] ='LINUX64'
+	os.environ['USE_MPI']='y'
+	os.environ['NWCHEM_MODULES']= 'qm' #"all python"
+	os.environ['BLASOPT']='-lopenblas'
+	os.environ['LAPACK_LIB']= '-lopenblas'
+	os.environ['BLAS_SIZE']='8'
+	subprocess.check_call(cmd,cwd='./nwchem/src')
+
+
 if __name__ == '__main__':
 	if not os.path.isfile(cube2raw):
 		cmd = ['gcc', '-O2', '-march=native', 'cube2raw.c', '-o', cube2raw, '-lm']
@@ -81,7 +99,9 @@ if __name__ == '__main__':
 			convert_smile('CCCCOc1ccccc1')
 			sys.exit()
 		elif arg=='--install':
-			install_openbabel()
+			if not os.path.isfile(obabel):
+				install_openbabel()
+			install_nwchem()
 
 	if not bpy:
 		cmd = ['blender']
