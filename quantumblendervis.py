@@ -6,7 +6,9 @@ sudo apt-get install libatlas-base-dev
 sudo apt-get install liblapack*
 sudo apt-get install libblas*
 sudo apt-get install nwchem
-sudo snap install openbabel
+
+## note the openbabel from snap is broken
+#sudo snap install openbabel
 '''
 
 import os, sys, math, subprocess
@@ -21,15 +23,32 @@ if _thisdir not in sys.path: sys.path.insert(0,_thisdir)
 cube2raw = '/tmp/cube2raw'
 cubealign = '/tmp/cubealign'
 multicube2raw = '/tmp/multicube2raw'
+obabel = os.path.join(_thisdir,'build-openbabel/bin/obabel')
 
 def convert_smile(smile):
 	tmp = '/tmp/in.smi'
 	open(tmp,'w').write(smile)
 	out = '/tmp/out.xyz'
-	#cmd = ['openbabel.obabel', '-i', 'smiles', '/tmp/in.smi', '-o', 'xyz', '-O', out]
-	cmd = ['openbabel.obabel', './in.smi', '-O', './out.xyz', '-h', '--gen3D']
+	cmd = [obabel, '-i', 'smiles', tmp, '-o', 'xyz', '-O', out]
 	print(cmd)
+	os.environ['BABEL_LIBDIR']=os.path.join(_thisdir,'build-openbabel/lib')
 	subprocess.check_call(cmd, cwd='/tmp')
+
+def install_openbabel():
+	if not os.path.isdir('openbabel'):
+		cmd = ['git', 'clone', '--depth', '1', 'https://github.com/openbabel/openbabel.git']
+		print(cmd)
+		subprocess.check_call(cmd)
+
+	if not os.path.isdir('build-openbabel'):
+		os.mkdir('build-openbabel')
+	cmd = ['cmake', os.path.join(_thisdir,'openbabel')]
+	print(cmd)
+	subprocess.check_call(cmd,cwd='./build-openbabel')
+
+	cmd = ['make']
+	print(cmd)
+	subprocess.check_call(cmd,cwd='./build-openbabel')
 
 if __name__ == '__main__':
 	if not os.path.isfile(cube2raw):
@@ -61,6 +80,8 @@ if __name__ == '__main__':
 		elif arg=='--test':
 			convert_smile('CCCCOc1ccccc1')
 			sys.exit()
+		elif arg=='--install':
+			install_openbabel()
 
 	if not bpy:
 		cmd = ['blender']
