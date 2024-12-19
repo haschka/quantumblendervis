@@ -1,4 +1,9 @@
 # quantumblendervis
+
+To use this checkout:
+- [Youtube Tutorial](https://www.youtube.com/watch?v=6jGhs-J7LVU)
+- [Article](https://ieeexplore.ieee.org/document/7151719)
+
 Tools to render quantum mechanical datasets using blender
 
 These tools should compile either using clang or gcc.
